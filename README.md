@@ -142,6 +142,7 @@ Abra qualquer navegador na rede interna e acesse:
 ```
 http://IP-DO-SERVIDOR:5000
 
+```
 ---
 
 ## Dicas e Observações
@@ -165,9 +166,11 @@ Os logs do Selenium aparecem no terminal onde o servidor está rodando.
 ### Atualizar as listas de tipos
 Edite `externos.py` ou `internos.py` — são arquivos Python. Reinicie o fluxo após salvar.
 
+```
 ## Desenvolvido por
 
 | Nome | GitHub | Contato |
 |------|--------|---------|
 | João Costa | [devJoaoVCosta](https://github.com/devJoaoVCosta) | jvinsef360@gmail.com |
 | Samuel Alves | [SamukaAlves](https://github.com/SamukaAlves) | contatosamuel.lima23@gmail.com |
+```
