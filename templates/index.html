@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Auto SEI — Funpresp-Jud</title>
+<link rel="icon" href="/static/visual/Icon.png" type="image/png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:       #1a73c8;
+  --blue-dk:    #1558a0;
+  --blue-lt:    #e8f0fb;
+  --blue-xs:    #f4f8ff;
+  --red:        #e53e3e;
+  --green:      #1e8a3c;
+  --bg:         #f0f4fa;
+  --card:       #ffffff;
+  --input:      #d4dbe6;
+  --border:     #d4dbe6;
+  --text:       #1a202c;
+  --muted:      #555e6b;
+  --row-odd:    #f7f9fb;
+  --row-eve:    #ffffff;
+  --font:       'DM Sans', 'Segoe UI', sans-serif;
+  --shadow:     0 4px 32px rgba(26,115,200,.10);
+  --radius:     14px;
+  /* filtro CSS que converte preto → azul #6d93bd (cor original dos ícones no app) */
+  --ico-filter: invert(60%) sepia(25%) saturate(500%) hue-rotate(180deg) brightness(92%);
+  /* filtro para branco */
+  --ico-white:  brightness(0) invert(1);
+}
+
+html, body { min-height:100%; background:var(--bg); font-family:var(--font); color:var(--text); font-size:14px; line-height:1.5; }
+
+/* ── PAGE ── */
+.page { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:28px 16px 48px; }
+
+.card { width:100%; max-width:980px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+
+/* ── HEADER ── */
+.card-header {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
+  padding: 22px 32px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.header-logo { width:46px; height:46px; flex-shrink:0; filter:var(--ico-white); }
+.header-text h1 { font-size:19px; font-weight:700; color:#fff; letter-spacing:-.3px; }
+.header-text p  { font-size:12px; color:rgba(255,255,255,.65); margin-top:2px; }
+
+/* ── TABS ── */
+.tabs-bar { display:flex; border-bottom:2px solid var(--border); padding:0 32px; }
+.tab-btn {
+  padding:14px 28px 12px; font-size:13px; font-weight:600; font-family:var(--font);
+  color:var(--muted); background:none; border:none; border-bottom:2px solid transparent;
+  margin-bottom:-2px; cursor:pointer; transition:color .18s, border-color .18s;
+}
+.tab-btn.active             { color:var(--blue); border-bottom-color:var(--blue); }
+.tab-btn:hover:not(.active) { color:var(--text); }
+
+/* ── TAB PANES ── */
+.tab-pane        { display:none; padding:28px 32px 32px; }
+.tab-pane.active { display:block; }
+
+/* ── CREDS ── */
+.creds { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+
+.field-group { display:flex; flex-direction:column; gap:6px; }
+.field-group label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); }
+
+/* Campo com ícone esquerda */
+.icon-field { position:relative; display:flex; align-items:center; }
+.icon-field .ico {
+  position:absolute; left:12px; width:16px; height:16px;
+  filter:var(--ico-filter); pointer-events:none; flex-shrink:0;
+}
+.icon-field input {
+  width:100%; height:42px; padding:0 12px 0 36px;
+  border:2px solid transparent; border-radius:10px;
+  background:var(--input); font-family:var(--font); font-size:13px; color:var(--text);
+  outline:none; transition:border-color .18s, background .18s;
+}
+.icon-field input:focus { border-color:var(--blue); background:#fff; }
+
+/* Campo senha */
+.pw-wrap { position:relative; display:flex; align-items:center; }
+.pw-wrap .ico { position:absolute; left:12px; width:16px; height:16px; filter:var(--ico-filter); pointer-events:none; }
+.pw-wrap input {
+  width:100%; height:42px; padding:0 40px 0 36px;
+  border:2px solid transparent; border-radius:10px;
+  background:var(--input); font-family:var(--font); font-size:13px; color:var(--text);
+  outline:none; transition:border-color .18s, background .18s; letter-spacing:2px;
+}
+.pw-wrap input:focus { border-color:var(--blue); background:#fff; }
+.pw-eye { position:absolute; right:8px; background:none; border:none; cursor:pointer; padding:4px; border-radius:6px; opacity:.55; transition:opacity .15s; display:flex; align-items:center; }
+.pw-eye:hover { opacity:1; }
+.pw-eye img { width:18px; height:18px; display:block; filter:var(--ico-filter); }
+
+/* ── PROCESSO ── */
+.process-row { margin-bottom:18px; max-width:380px; }
+
+/* ── DROPZONE ── */
+.dropzone {
+  border:2px dashed var(--blue); border-radius:12px; background:var(--blue-xs);
+  padding:20px 24px; display:flex; align-items:center; gap:16px;
+  cursor:pointer; transition:background .18s, border-color .18s;
+  margin-bottom:16px; user-select:none;
+}
+.dropzone:hover, .dropzone.over { background:var(--blue-lt); border-color:var(--blue-dk); }
+.dropzone-icon img { width:34px; height:34px; filter:var(--ico-filter); }
+.dropzone-text { font-size:13px; color:var(--text); line-height:1.6; }
+.dropzone-text a { color:var(--blue); font-weight:600; text-decoration:none; }
+.dropzone-text a:hover { text-decoration:underline; }
+.dropzone-hint { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ── TABLE ── */
+.table-wrap { border-radius:11px; overflow:hidden; border:1px solid var(--border); margin-bottom:16px; }
+
+.table-head { display:grid; align-items:center; background:var(--blue); padding:0 10px; height:40px; gap:8px; }
+.table-head span { font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* colunas: chk | # | [proc] | tipoExt | tipoInt | arquivo | status | sp | rem */
+.head-unico { grid-template-columns:22px 20px 165px 1fr 150px 48px 30px 28px; }
+.head-multi { grid-template-columns:22px 20px 155px 155px 1fr 150px 48px 30px 28px; }
+
+.rows-container { max-height:320px; overflow-y:auto; }
+.rows-container::-webkit-scrollbar       { width:6px; }
+.rows-container::-webkit-scrollbar-track { background:var(--input); }
+.rows-container::-webkit-scrollbar-thumb { background:#a0aab4; border-radius:3px; }
+
+.doc-row { display:grid; align-items:center; padding:0 10px; height:50px; gap:8px; transition:background .1s; }
+.doc-row:nth-child(odd)  { background:var(--row-odd); }
+.doc-row:nth-child(even) { background:var(--row-eve); }
+.doc-row.drag-over       { background:#dceeff; border-top:2px solid var(--blue); }
+.doc-row.row-unico { grid-template-columns:22px 20px 165px 1fr 150px 48px 30px 28px; }
+.doc-row.row-multi { grid-template-columns:22px 20px 155px 155px 1fr 150px 48px 30px 28px; }
+
+.row-chk { width:16px; height:16px; accent-color:var(--blue); cursor:pointer; flex-shrink:0; }
+
+.drag-handle { font-size:12px; font-weight:700; color:var(--muted); text-align:center; cursor:grab; user-select:none; width:20px; }
+.drag-handle:active { cursor:grabbing; }
+
+.row-input, .row-select {
+  height:34px; padding:0 10px; border:2px solid transparent; border-radius:8px;
+  background:var(--input); font-family:var(--font); font-size:12px; color:var(--text);
+  outline:none; width:100%; transition:border-color .15s;
+}
+.row-input:focus, .row-select:focus { border-color:var(--blue); background:#fff; }
+
+.combo-interno { background:var(--blue-dk) !important; color:#fff !important; }
+.combo-interno option { background:#fff; color:var(--text); }
+.combo-interno:focus  { border-color:var(--blue) !important; }
+
+.row-status { font-size:11px; font-weight:700; text-align:center; width:48px; }
+.row-status.ok   { color:var(--green); }
+.row-status.erro { color:var(--red); }
+
+.btn-sempdf {
+  width:28px; height:28px; border:none; background:transparent;
+  cursor:pointer; flex-shrink:0; padding:0; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .15s;
+}
+.btn-sempdf img {
+  width:22px; height:22px;
+  filter:var(--ico-filter);   /* azul igual aos outros ícones */
+  transition:filter .15s;
+  pointer-events:none;
+}
+.btn-sempdf.active img {
+  filter:invert(25%) sepia(90%) saturate(700%) hue-rotate(330deg) brightness(95%); /* vermelho */
+}
+.btn-sempdf:hover img { opacity:.75; }
+
+.btn-remove { width:26px; height:26px; border-radius:13px; border:none; background:var(--red); color:#fff; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; }
+.btn-remove:hover { background:#c0392b; }
+
+/* ── TOOLBAR ── */
+.toolbar { display:flex; justify-content: center; align-items: center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.btn-ghost {
+  height:36px; padding:0 16px; border:1.5px solid var(--blue); border-radius:9px;
+  background:transparent; color:var(--blue); font-family:var(--font); font-size:13px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .15s; white-space:nowrap;
+}
+.btn-ghost:hover { background:var(--blue-lt); }
+.btn-ghost img { width:16px; height:16px; filter:var(--ico-filter); }
+
+/* ── SEL BAR ── */
+.sel-bar { display:none; align-items:center; gap:12px; background:var(--blue-xs); border:1px solid var(--blue-lt); border-radius:9px; padding:8px 14px; margin-bottom:14px; font-size:12px; color:var(--muted); }
+.sel-bar.visible { display:flex; }
+.sel-bar select { height:30px; padding:0 10px; border:1.5px solid var(--blue); border-radius:7px; font-size:12px; font-family:var(--font); color:var(--text); background:#fff; outline:none; }
+.sel-bar .btn-apply { height:30px; padding:0 14px; background:var(--blue); color:#fff; border:none; border-radius:7px; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; transition:background .15s; }
+.sel-bar .btn-apply:hover { background:var(--blue-dk); }
+
+/* ── BTN EXEC ── */
+.btn-exec {
+  width:33%; height:52px; background:var(--blue); color:#fff; margin:0 auto;
+  border:2px solid #fff; border-radius:12px;
+  font-family:var(--font); font-size:15px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:background .15s, opacity .15s; letter-spacing:-.2px;
+}
+.btn-exec-icon { width:20px; height:20px; filter:brightness(0) invert(1); flex-shrink:0; }
+.btn-exec:hover   { background:var(--blue-dk); }
+.btn-exec:active  { background:#0f3f7a; }
+.btn-exec:disabled { opacity:.5; cursor:not-allowed; }
+
+/* ── PROGRESS ── */
+
+/* ── TOAST ── */
+.toast-wrap { position:fixed; top:24px; right:24px; display:flex; flex-direction:column; gap:10px; z-index:9999; pointer-events:none; }
+.toast { background:var(--text); color:#fff; border-radius:10px; padding:12px 18px; font-size:13px; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,.18); pointer-events:auto; opacity:0; transform:translateY(-8px); transition:opacity .25s, transform .25s; max-width:320px; }
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.ok   { background:var(--green); }
+.toast.warn { background:#d97706; }
+.toast.erro { background:var(--red); }
+
+/* ── SPINNER ── */
+.spinner { width:18px; height:18px; border:3px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:none; }
+.btn-exec.loading .spinner   { display:block; }
+.btn-exec.loading .btn-label { display:none; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── EMPTY ── */
+.empty-state { text-align:center; padding:28px; color:var(--muted); font-size:13px; }
+.empty-state img { width:30px; height:30px; opacity:.25; margin-bottom:8px; filter:var(--ico-filter); }
+
+
+/* ── MODAL TROCAR TIPO ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.45);
+  z-index:1000; display:none; align-items:center; justify-content:center;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:#fff; border-radius:14px; padding:26px 28px 22px;
+  width:100%; max-width:400px; box-shadow:0 16px 48px rgba(0,0,0,.22);
+  display:flex; flex-direction:column; gap:14px;
+}
+.modal-title { font-size:15px; font-weight:700; color:var(--text); }
+.modal-label { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.modal-select, .modal-input {
+  width:100%; height:40px; padding:0 12px;
+  border:2px solid var(--border); border-radius:9px;
+  background:var(--input); font-family:var(--font); font-size:13px; color:var(--text);
+  outline:none; transition:border-color .15s;
+}
+.modal-select:focus, .modal-input:focus { border-color:var(--blue); background:#fff; }
+.modal-note {
+  font-size:11px; color:var(--muted); background:var(--blue-xs);
+  border-radius:8px; padding:8px 12px; line-height:1.6;
+}
+.modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:4px; }
+.btn-modal-cancel {
+  height:36px; padding:0 18px; border:1.5px solid var(--border); border-radius:9px;
+  background:#fff; color:var(--muted); font-family:var(--font); font-size:13px; font-weight:600;
+  cursor:pointer; transition:background .15s;
+}
+.btn-modal-cancel:hover { background:var(--input); }
+.btn-modal-ok {
+  height:36px; padding:0 22px; border:none; border-radius:9px;
+  background:var(--blue); color:#fff; font-family:var(--font); font-size:13px; font-weight:600;
+  cursor:pointer; transition:background .15s;
+}
+.btn-modal-ok:hover { background:var(--blue-dk); }
+
+/* ── FOOTER ── */
+.footer { margin-top:20px; font-size:11px; color:var(--muted); text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; }
+.footer img { width:18px; height:18px; opacity:.45; }
+
+
+/* ── COLUNA NOME NA ÁRVORE (dinâmica) ── */
+@media (max-width:680px) {
+  .card-header,.tab-pane { padding:18px 20px; }
+  .creds { grid-template-columns:1fr; }
+  .tabs-bar { padding:0 20px; }
+}
+
+.progress-panel { display:none; margin-bottom:12px; }
+.progress-panel.visible { display:block; }
+.progress-bar-wrap { height:10px; background:var(--border); border-radius:5px; overflow:hidden; margin-bottom:6px; }
+.progress-bar-fill { height:100%; background:var(--blue); border-radius:5px; width:0%; transition:width .6s cubic-bezier(.4,0,.2,1); }
+.progress-label { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:4px; }
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<input type="file" id="fileInputHidden" multiple
+       accept=".pdf,.docx"
+       style="display:none" />
+
+
+<!-- modal-importar removido: botão Nomes vai direto para xlsx -->
+
+<!-- ══ MODAL ABA DA PLANILHA ══ -->
+<div class="modal-overlay" id="modal-aba">
+  <div class="modal-box">
+    <div class="modal-title">Nome da aba da planilha</div>
+    <div>
+      <div class="modal-label">Digite o nome da aba:</div>
+      <input class="modal-input" id="modal-aba-input" type="text" placeholder="Ex: Plan1" />
+    </div>
+    <div class="modal-note">A planilha deve ter uma coluna com cabeçalho <strong>Nome na árvore</strong>.</div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="aba-cancel">Cancelar</button>
+      <button class="btn-modal-ok" id="aba-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- input oculto para xlsx -->
+<input type="file" id="xlsxInput" accept=".xlsx,.xls,.xlsm" style="display:none" />
+
+<!-- ══ MODAL TROCAR TIPO ══ -->
+<div class="modal-overlay" id="modal-trocar">
+  <div class="modal-box">
+    <div class="modal-title">
+      <img src="/static/visual/troca.png" style="width:16px;height:16px;vertical-align:middle;filter:var(--ico-filter);margin-right:6px;" alt="" />
+      Alterar tipo de documento no SEI
+    </div>
+    <div>
+      <div class="modal-label">Selecione o tipo de documento no SEI:</div>
+      <select class="modal-select" id="modal-tipo-sel"></select>
+    </div>
+    <div>
+      <div class="modal-label" id="modal-linha-lbl">Em qual linha aplicar a mudança?</div>
+      <input class="modal-input" id="modal-linha-input" type="number" min="1" placeholder="Ex: 3" />
+    </div>
+    <div class="modal-note">
+      ℹ Apenas a linha indicada usará este tipo no SEI.<br>
+      As demais continuam usando "Externo" normalmente.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="modal-cancel">Cancelar</button>
+      <button class="btn-modal-ok" id="modal-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="card-header">
+    <img class="header-logo" src="/static/visual/Icon_branco.png" alt="Auto SEI" />
+    <div class="header-text">
+      <h1>Automação SEI — Funpresp-Jud</h1>
+      <p>Inclua documentos no SEI de forma automática</p>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="unico">  Único  </button>
+    <button class="tab-btn"        data-tab="multi">  Múltiplos  </button>
+  </div>
+
+  <!-- ══ ABA ÚNICO ══ -->
+  <div class="tab-pane active" id="tab-unico">
+    <div class="creds">
+      <div class="field-group">
+        <label>Usuário SEI</label>
+        <div class="icon-field">
+          <img class="ico" src="/static/visual/user.png" alt="" />
+          <input type="text" id="u-usuario" placeholder="seu.usuario" autocomplete="username" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Senha</label>
+        <div class="pw-wrap">
+          <img class="ico" src="/static/visual/senha.png" alt="" />
+          <input type="password" id="u-senha" placeholder="********" autocomplete="current-password" />
+          <button class="pw-eye" data-target="u-senha" title="Mostrar senha">
+            <img src="/static/visual/eye.png" alt="ver" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group process-row">
+      <label>Número do Processo</label>
+      <div class="icon-field">
+        <img class="ico" src="/static/visual/processo.png" alt="" />
+        <input type="text" id="u-processo" placeholder="00000/2026" />
+      </div>
+    </div>
+
+    <div class="dropzone" id="u-dropzone">
+      <div class="dropzone-icon"><img src="/static/visual/folhinha.png" alt="arquivo" /></div>
+      <div>
+        <div class="dropzone-text">Arraste e solte ou <a href="#" id="u-browse-link">clique para buscar no dispositivo</a> os arquivos ou pasta.</div>
+        <div class="dropzone-hint">PDF, DOCX — máx. 20 MB por arquivo (limite do SEI)</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head head-unico" id="u-head">
+        <span></span><span></span><span>Tipo de Documento</span><span>Nome Arquivo</span><span>Nome na Árvore</span><span>Status</span><span></span>
+      </div>
+      <div class="rows-container" id="u-rows">
+        <div class="empty-state" id="u-empty">
+          <img src="/static/visual/processo.png" alt="" /><br/>
+          Nenhum documento. Arraste arquivos acima ou clique em Adicionar.
+        </div>
+      </div>
+    </div>
+
+    <div class="sel-bar" id="u-selbar">
+      <span>Selecionados:</span>
+      <select id="u-combo-bloco"></select>
+      <button class="btn-apply" id="u-apply-sel">Aplicar tipo</button>
+      <span style="margin-left:auto;font-size:11px;cursor:pointer;color:var(--red)" id="u-clear-sel">✕ desmarcar</span>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-ghost" id="u-add-btn">
+        <img src="/static/visual/adicionar.png" alt="" /> Adicionar linha
+      </button>
+      <button class="btn-ghost" id="u-trocar-btn">
+        <img src="/static/visual/troca.png" alt="" /> Trocar Tipo
+      </button>
+      <button class="btn-ghost" id="u-import-btn">
+        <img src="/static/visual/import.png" alt="" /> Nomes
+      </button>
+      <button class="btn-ghost" id="u-clear-btn">
+        <img src="/static/visual/limpar.png" alt="" /> Limpar tudo
+      </button>
+    </div>
+
+    <div class="progress-panel" id="u-progress">
+      <div class="progress-label"><span id="u-prog-label">Aguardando...</span><span id="u-prog-pct">0%</span></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="u-prog-bar"></div></div>
+    </div>
+    <button class="btn-exec" id="u-exec">
+      <div class="spinner"></div>
+      <img src="/static/visual/seta_exec.png" alt="" class="btn-exec-icon" />
+      <span class="btn-label">EXECUTAR</span>
+    </button>
+  </div>
+
+  <!-- ══ ABA MÚLTIPLOS ══ -->
+  <div class="tab-pane" id="tab-multi">
+    <div class="creds">
+      <div class="field-group">
+        <label>Usuário SEI</label>
+        <div class="icon-field">
+          <img class="ico" src="/static/visual/user.png" alt="" />
+          <input type="text" id="m-usuario" placeholder="seu.usuario" autocomplete="username" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Senha</label>
+        <div class="pw-wrap">
+          <img class="ico" src="/static/visual/senha.png" alt="" />
+          <input type="password" id="m-senha" placeholder="********" autocomplete="current-password" />
+          <button class="pw-eye" data-target="m-senha" title="Mostrar senha">
+            <img src="/static/visual/eye.png" alt="ver" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dropzone" id="m-dropzone">
+      <div class="dropzone-icon"><img src="/static/visual/folhinha.png" alt="arquivo" /></div>
+      <div>
+        <div class="dropzone-text">Arraste e solte ou <a href="#" id="m-browse-link">clique para buscar no dispositivo</a> os arquivos ou pasta.</div>
+        <div class="dropzone-hint">PDF, DOCX — máx. 20 MB por arquivo (limite do SEI)</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head head-multi">
+        <span></span><span></span><span>Processo</span><span>Tipo de Documento</span><span>Nome Arquivo</span><span>Nome na Árvore</span><span>Status</span><span></span>
+      </div>
+      <div class="rows-container" id="m-rows">
+        <div class="empty-state" id="m-empty">
+          <img src="/static/visual/processo.png" alt="" /><br/>
+          Nenhum documento. Arraste arquivos acima ou clique em Adicionar.
+        </div>
+      </div>
+    </div>
+
+    <div class="sel-bar" id="m-selbar">
+      <span>Selecionados:</span>
+      <select id="m-combo-bloco"></select>
+      <button class="btn-apply" id="m-apply-sel">Aplicar tipo</button>
+      <span style="margin-left:auto;font-size:11px;cursor:pointer;color:var(--red)" id="m-clear-sel">✕ desmarcar</span>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-ghost" id="m-add-btn">
+        <img src="/static/visual/adicionar.png" alt="" /> Adicionar linha
+      </button>
+      <button class="btn-ghost" id="m-trocar-btn">
+        <img src="/static/visual/troca.png" alt="" /> Trocar Tipo
+      </button>
+      <button class="btn-ghost" id="m-import-btn">
+        <img src="/static/visual/import.png" alt="" /> Nomes
+      </button>
+      <button class="btn-ghost" id="m-clear-btn">
+        <img src="/static/visual/limpar.png" alt="" /> Limpar tudo
+      </button>
+    </div>
+
+    <div class="progress-panel" id="m-progress">
+      <div class="progress-label"><span id="m-prog-label">Aguardando...</span><span id="m-prog-pct">0%</span></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m-prog-bar"></div></div>
+    </div>
+    <button class="btn-exec" id="m-exec">
+      <div class="spinner"></div>
+      <img src="/static/visual/seta_exec.png" alt="" class="btn-exec-icon" />
+      <span class="btn-label">EXECUTAR</span>
+    </button>
+  </div>
+
+</div><!-- .card -->
+<div class="footer">Desenvolvido por GEABE &amp; GETES</div>
+</div><!-- .page -->
+
+<script>
+const TIPOS_EXTERNOS = {{ tipos_externos | tojson }};
+const TIPOS_INTERNOS = {{ tipos_internos | tojson }};
+
+/* ── TOAST ── */
+function toast(msg, tipo='info', dur=3500) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + tipo; el.textContent = msg;
+  document.getElementById('toastWrap').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, dur);
+}
+
+/* ── TABS ── */
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+}));
+
+/* ── OLHO SENHA ── */
+document.querySelectorAll('.pw-eye').forEach(btn => {
+  const get = () => document.getElementById(btn.dataset.target);
+  btn.addEventListener('mousedown',  () => get().type = 'text');
+  btn.addEventListener('mouseup',    () => get().type = 'password');
+  btn.addEventListener('mouseleave', () => get().type = 'password');
+});
+
+/* ── COMBO BLOCO ── */
+['u-combo-bloco','m-combo-bloco'].forEach(id => {
+  const sel = document.getElementById(id);
+  TIPOS_EXTERNOS.forEach(t => { const o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+});
+
+/* ── STATE ── */
+const state = { unico:{rows:[],undo:[]}, multi:{rows:[],undo:[]} };
+let rowId = 0;
+
+function newRow(opts={}) {
+  return { id:++rowId, processo:opts.processo||'', tipoExterno:opts.tipoExterno||'',
+           tipoSei: opts.tipoSei !== undefined ? opts.tipoSei : 'Externo',
+           nomeArquivo:opts.nomeArquivo||'',
+           serverPath:opts.serverPath||'', semPdf:opts.semPdf||false, status:opts.status||'', selected:false };
+}
+
+/* ── HELPERS ── */
+function mk(tag) { return document.createElement(tag); }
+function opt(sel, val, txt, sel2=false) { const o=mk('option'); o.value=val; o.textContent=txt; if(sel2)o.selected=true; sel.appendChild(o); }
+
+/* ── RENDER ── */
+function renderTab(modo) {
+  const p = modo==='unico'?'u':'m', rows=state[modo].rows;
+  const cont=document.getElementById(p+'-rows'), empty=document.getElementById(p+'-empty');
+  const bar=document.getElementById(p+'-selbar');
+  if(empty) empty.style.display = rows.length?'none':'';
+  cont.querySelectorAll('.doc-row').forEach(e=>e.remove());
+  bar.classList.toggle('visible', rows.some(r=>r.selected));
+  rows.forEach((row,idx) => cont.appendChild(buildRow(modo,row,idx)));
+}
+
+function buildRow(modo, row, idx) {
+  const isM = modo==='multi';
+  const div = mk('div'); div.className=`doc-row ${isM?'row-multi':'row-unico'}`; div.dataset.id=row.id;
+
+  /* drag reorder */
+  div.draggable=true;
+  div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',String(idx)); div.style.opacity='.45'; });
+  div.addEventListener('dragend',   ()=>div.style.opacity='');
+  div.addEventListener('dragover',  e=>{ e.preventDefault(); div.classList.add('drag-over'); });
+  div.addEventListener('dragleave', ()=>div.classList.remove('drag-over'));
+  div.addEventListener('drop', e=>{ e.preventDefault(); div.classList.remove('drag-over');
+    const from=parseInt(e.dataTransfer.getData('text/plain'));
+    if(from!==idx){ pushUndo(modo); const m=state[modo].rows.splice(from,1)[0]; state[modo].rows.splice(idx,0,m); renderTab(modo); }
+  });
+
+  /* 1. checkbox — só para linhas externas (sel-bar não funciona para internos) */
+  const chk=mk('input'); chk.type='checkbox'; chk.className='row-chk'; chk.checked=row.selected;
+  if (row.tipoSei !== 'Externo') {
+    chk.style.visibility = 'hidden'; // oculto para internos
+    chk.disabled = true;
+  }
+  chk.addEventListener('change',()=>{ row.selected=chk.checked; renderTab(modo); });
+  div.appendChild(chk);
+
+  /* 2. numero */
+  const num=mk('span'); num.className='drag-handle'; num.title='Arraste para reordenar'; num.textContent=idx+1;
+  div.appendChild(num);
+
+  /* 3. processo (só multi) */
+  if(isM){ const p=mk('input'); p.className='row-input'; p.placeholder='Nº processo'; p.value=row.processo;
+    p.addEventListener('input',()=>row.processo=p.value); div.appendChild(p); }
+
+  /* 4. combo externo */
+  const sExt=mk('select'); sExt.className='row-select';
+  opt(sExt,'','Tipo de Documento...');
+  TIPOS_EXTERNOS.forEach(t=>opt(sExt,t,t,t===row.tipoExterno));
+  sExt.style.display=row.tipoSei==='Externo'?'':'none';
+  sExt.addEventListener('change',()=>row.tipoExterno=sExt.value);
+  sExt.addEventListener('dblclick',()=>switchInt(row,sExt,sInt,true));
+  div.appendChild(sExt);
+
+  /* 5. combo interno */
+  const sInt=mk('select'); sInt.className='row-select combo-interno';
+  opt(sInt,'','Tipo de Documento...');
+  TIPOS_INTERNOS.forEach(t=>opt(sInt,t,t,t===row.tipoSei&&row.tipoSei!=='Externo'));
+  sInt.style.display=row.tipoSei!=='Externo'?'':'none';
+  sInt.addEventListener('change',()=>{ if(sInt.value)row.tipoSei=sInt.value; else switchInt(row,sExt,sInt,false); });
+  sInt.addEventListener('dblclick',()=>switchInt(row,sExt,sInt,false));
+  div.appendChild(sInt);
+
+  /* 6. Nome Arquivo — somente leitura, mostra o nome do arquivo importado */
+  const nome=mk('input'); nome.className='row-input';
+  nome.value=row.nomeArquivo||'';
+  nome.readOnly=true;
+  nome.style.cssText='cursor:default;background:var(--input);color:var(--muted);';
+  nome.title=row.nomeArquivo||'';
+  div.appendChild(nome);
+
+  /* 6b. Nome na Árvore — sempre visível, editável */
+  const arvore=mk('input'); arvore.className='row-input';
+  arvore.placeholder='Nome na árvore...';
+  arvore.value=row.nomeArvore||'';
+  arvore.addEventListener('input',()=>row.nomeArvore=arvore.value);
+  div.appendChild(arvore);
+
+  /* 7. status */
+  const st=mk('span'); st.className='row-status '+row.status;
+  st.textContent=row.status==='ok'?'OK':row.status==='erro'?'ERRO':'';
+  div.appendChild(st);
+
+  /* 8. sem-pdf — só existe para documentos EXTERNOS (igual ao original) */
+  const ehInterno = row.tipoSei !== 'Externo';
+  if (ehInterno) {
+    // Interno: coloca um espaçador invisível para manter o grid alinhado
+    const spacer = mk('span');
+    spacer.style.cssText = 'width:30px;display:block;';
+    div.appendChild(spacer);
+  } else {
+    const sp=mk('button'); sp.className='btn-sempdf'+(row.semPdf?' active':''); sp.title='Sem PDF: salvar sem anexar arquivo';
+    const spImg=mk('img'); spImg.src='/static/visual/pdf.png'; spImg.alt='PDF';
+    sp.appendChild(spImg);
+    // Linha adicionada manualmente (sem arquivo) → travada em vermelho
+    const semArquivo = !row.serverPath;
+    if (semArquivo) {
+      sp.classList.add('active');
+      row.semPdf = true;
+      sp.style.cursor = 'default';
+      sp.title = 'Sem arquivo — sempre Sem PDF';
+    } else {
+      sp.addEventListener('click',()=>{ row.semPdf=!row.semPdf; sp.classList.toggle('active',row.semPdf); nome.disabled=row.semPdf; });
+    }
+    div.appendChild(sp);
+  }
+
+  /* 9. remover */
+  const rem=mk('button'); rem.className='btn-remove'; rem.textContent='✕';
+  rem.addEventListener('click',()=>{ pushUndo(modo); state[modo].rows.splice(idx,1); renderTab(modo); });
+  div.appendChild(rem);
+
+  return div;
+}
+
+function switchInt(row, sExt, sInt, toInterno) {
+  if(toInterno){
+    row.tipoSei=''; row.semPdf=true;
+    sExt.style.display='none'; sInt.style.display=''; sInt.focus();
+  } else {
+    row.tipoSei='Externo'; row.semPdf=false;
+    sInt.style.display='none'; sExt.style.display=''; sExt.focus();
+  }
+  // Rerender para atualizar visibilidade do btn-sempdf
+  const modo = sExt.closest('.doc-row').classList.contains('row-multi') ? 'multi' : 'unico';
+  renderTab(modo);
+}
+
+/* ── UNDO ── */
+function pushUndo(modo){ state[modo].undo.push(state[modo].rows.map(r=>({...r}))); if(state[modo].undo.length>30)state[modo].undo.shift(); }
+function undo(modo){ if(!state[modo].undo.length){toast('Nada para desfazer.','warn');return;} state[modo].rows=state[modo].undo.pop(); renderTab(modo); }
+
+/* ── ADD ROW ── */
+function addRow(modo,opts={}){ pushUndo(modo); state[modo].rows.push(newRow(Object.assign({semPdf:true},opts))); renderTab(modo); }
+
+/* ── UPLOAD ── */
+let _modo=null;
+async function uploadAdd(modo, files) {
+  // Validar tamanho: SEI não aceita arquivos acima de 20 MB
+  const MAX_MB = 20;
+  const grandes = files.filter(f => f.size > MAX_MB * 1024 * 1024);
+  if (grandes.length) {
+    grandes.forEach(f => toast(`"${f.name}" excede ${MAX_MB} MB e não foi adicionado. O SEI não aceita arquivos maiores.`, 'erro', 6000));
+    files = files.filter(f => f.size <= MAX_MB * 1024 * 1024);
+    if (!files.length) return;
+  }
+  const fd = new FormData();
+  files.forEach(f => fd.append('files', f));
+
+  let json;
+  try {
+    const r = await fetch('/upload', { method: 'POST', body: fd });
+    json = await r.json();
+  } catch { toast('Erro de rede.', 'erro'); return; }
+  if (json.erro) { toast(json.erro, 'erro'); return; }
+
+  pushUndo(modo);
+  json.arquivos.forEach(a => {
+    const ehDocx = a.original.toLowerCase().endsWith('.docx');
+    // Na aba múltiplos: extrai processo do nome do arquivo
+    // Formato esperado: 00417.2026.pdf → processo = "00417/2026"
+    let processoAuto = '';
+    if (modo === 'multi') {
+      const semExt = a.original.replace(/\.[^.]+$/, '');
+      if (/^\d+\.\d{4}$/.test(semExt)) {
+        processoAuto = semExt.replace('.', '/');
+      }
+    }
+    state[modo].rows.push(newRow({
+      nomeArquivo: a.original,
+      serverPath:  a.server_path,
+      tipoSei:     ehDocx ? '' : 'Externo',
+      semPdf:      ehDocx,
+      processo:    processoAuto,
+    }));
+  });
+  renderTab(modo);
+  toast(`${json.arquivos.length} arquivo(s) adicionado(s).`, 'ok');
+}
+
+// Lê todos os arquivos de uma entrada (arquivo ou pasta recursiva)
+async function lerEntrada(entry) {
+  return new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => resolve([f]), () => resolve([]));
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const allEntries = [];
+      const lerMais = () => {
+        reader.readEntries(async entries => {
+          if (!entries.length) {
+            const nested = await Promise.all(allEntries.map(lerEntrada));
+            resolve(nested.flat());
+          } else {
+            allEntries.push(...entries);
+            lerMais();
+          }
+        }, () => resolve([]));
+      };
+      lerMais();
+    } else {
+      resolve([]);
+    }
+  });
+}
+
+function setupZone(id, modo) {
+  const z = document.getElementById(id);
+  z.addEventListener('dragover',  e => { e.preventDefault(); z.classList.add('over'); });
+  z.addEventListener('dragleave', () => z.classList.remove('over'));
+  z.addEventListener('drop', async e => {
+    e.preventDefault(); z.classList.remove('over');
+    const items = Array.from(e.dataTransfer.items || []);
+    let files = [];
+    if (items.length && items[0].webkitGetAsEntry) {
+      // Usar API de entradas para ler pastas
+      const entries = items.map(i => i.webkitGetAsEntry()).filter(Boolean);
+      const todos = await Promise.all(entries.map(lerEntrada));
+      files = todos.flat().filter(f => {
+        const n = f.name.toLowerCase();
+        return n.endsWith('.pdf') || n.endsWith('.docx');
+      });
+    } else {
+      // Fallback para navegadores sem suporte a entradas
+      files = Array.from(e.dataTransfer.files).filter(f => {
+        const n = f.name.toLowerCase();
+        return n.endsWith('.pdf') || n.endsWith('.docx');
+      });
+    }
+    if (files.length) await uploadAdd(modo, files);
+    else toast('Nenhum PDF ou DOCX encontrado.', 'warn');
+  });
+  z.addEventListener('click', () => {
+    _modo = modo;
+    document.getElementById('fileInputHidden').click();
+  });
+}
+setupZone('u-dropzone', 'unico');
+setupZone('m-dropzone', 'multi');
+
+// ── Listener ÚNICO do input de arquivo ──────────────────────
+document.getElementById('fileInputHidden').addEventListener('change', async function () {
+  if (!this.files.length) { this.value = ''; return; }
+  const files = Array.from(this.files).filter(f => {
+    const n = f.name.toLowerCase();
+    return n.endsWith('.pdf') || n.endsWith('.docx');
+  });
+  this.value = ''; // limpa antes de processar para não disparar duas vezes
+  if (!files.length) { toast('Nenhum PDF ou DOCX encontrado.', 'warn'); return; }
+  await uploadAdd(_modo, files);
+});
+
+// Links "clique para buscar" → abre o mesmo seletor
+['u-browse-link', 'm-browse-link'].forEach(id =>
+  document.getElementById(id).addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    _modo = id.startsWith('u') ? 'unico' : 'multi';
+    document.getElementById('fileInputHidden').click();
+  })
+);
+
+/* ── TOOLBAR ── */
+document.getElementById('u-add-btn').addEventListener('click',   ()=>addRow('unico'));
+document.getElementById('u-clear-btn').addEventListener('click', ()=>{pushUndo('unico');state.unico.rows=[];renderTab('unico');});
+document.getElementById('m-add-btn').addEventListener('click',   ()=>addRow('multi'));
+document.getElementById('m-clear-btn').addEventListener('click', ()=>{pushUndo('multi');state.multi.rows=[];renderTab('multi');});
+document.getElementById('u-apply-sel').addEventListener('click', ()=>applyTipo('unico'));
+document.getElementById('m-apply-sel').addEventListener('click', ()=>applyTipo('multi'));
+document.getElementById('u-clear-sel').addEventListener('click', ()=>{state.unico.rows.forEach(r=>r.selected=false);renderTab('unico');});
+document.getElementById('m-clear-sel').addEventListener('click', ()=>{state.multi.rows.forEach(r=>r.selected=false);renderTab('multi');});
+
+document.getElementById('u-trocar-btn').addEventListener('click', ()=>abrirModalTrocar('unico'));
+document.getElementById('m-trocar-btn').addEventListener('click', ()=>abrirModalTrocar('multi'));
+
+function applyTipo(modo) {
+  const p    = modo === 'unico' ? 'u' : 'm';
+  const tipo = document.getElementById(p + '-combo-bloco').value;
+  // Aplica apenas nas linhas EXTERNAS selecionadas
+  state[modo].rows.forEach(r => {
+    if (!r.selected) return;
+    if (r.tipoSei === 'Externo') {
+      r.tipoExterno = tipo;
+    }
+    r.selected = false;
+  });
+  renderTab(modo);
+}
+
+
+/* ── MODAL TROCAR TIPO ── */
+// Popula o select do modal com os tipos internos
+(function(){
+  const sel = document.getElementById('modal-tipo-sel');
+  TIPOS_INTERNOS.forEach(t=>{ const o=mk('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+})();
+
+let _modalModo = 'unico';
+
+function abrirModalTrocar(modo) {
+  const rows = state[modo].rows;
+  if (!rows.length) { toast('Adicione documentos antes de alterar o tipo SEI.', 'warn'); return; }
+  _modalModo = modo;
+  // Atualiza label com total de linhas
+  const total = rows.length;
+  document.getElementById('modal-linha-lbl').textContent =
+    `Em qual linha aplicar a mudança? (1 – ${total})`;
+  document.getElementById('modal-linha-input').max = total;
+  document.getElementById('modal-linha-input').value = '';
+  document.getElementById('modal-trocar').classList.add('open');
+  document.getElementById('modal-linha-input').focus();
+}
+
+document.getElementById('modal-cancel').addEventListener('click', ()=>{
+  document.getElementById('modal-trocar').classList.remove('open');
+});
+document.getElementById('modal-trocar').addEventListener('click', e=>{
+  if (e.target === document.getElementById('modal-trocar'))
+    document.getElementById('modal-trocar').classList.remove('open');
+});
+
+document.getElementById('modal-ok').addEventListener('click', ()=>{
+  const tipo  = document.getElementById('modal-tipo-sel').value;
+  const linhaStr = document.getElementById('modal-linha-input').value.trim();
+  const total = state[_modalModo].rows.length;
+
+  if (!linhaStr || isNaN(linhaStr)) { toast('Digite um número de linha válido.', 'warn'); return; }
+  const n = parseInt(linhaStr);
+  if (n < 1 || n > total) { toast(`A linha deve estar entre 1 e ${total}.`, 'warn'); return; }
+
+  pushUndo(_modalModo);
+  const row = state[_modalModo].rows[n - 1];
+  row.tipoSei = tipo;           // define o tipo interno
+  row.tipoExterno = '';         // limpa o externo (não será usado)
+  renderTab(_modalModo);
+  document.getElementById('modal-trocar').classList.remove('open');
+  toast(`Linha ${n}: tipo alterado para "${tipo}".`, 'ok');
+});
+
+// Enter confirma o modal
+document.getElementById('modal-linha-input').addEventListener('keydown', e=>{
+  if (e.key === 'Enter') document.getElementById('modal-ok').click();
+});
+
+/* ── PROGRESS ── */
+function showProgress(modo){
+  const p=modo==='unico'?'u':'m';
+  document.getElementById(p+'-progress').classList.add('visible');
+  document.getElementById(p+'-prog-bar').style.width='0%';
+  document.getElementById(p+'-prog-pct').textContent='0%';
+  document.getElementById(p+'-prog-label').textContent='Iniciando...';
+}
+function updateProgress(modo,done,total){
+  const p=modo==='unico'?'u':'m';
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById(p+'-prog-bar').style.width=pct+'%';
+  document.getElementById(p+'-prog-pct').textContent=pct+'%';
+  document.getElementById(p+'-prog-label').textContent=
+    done<total?`Processando documento ${done+1} de ${total}...`:'Concluído!';
+}
+function hideProgress(modo){
+  const p=modo==='unico'?'u':'m';
+  setTimeout(()=>document.getElementById(p+'-progress').classList.remove('visible'),2000);
+}
+function setStatuses(modo,res){ state[modo].rows.forEach((r,i)=>r.status=res[i]?'ok':'erro'); renderTab(modo); }
+
+/* ── POLLING ── */
+async function pollJob(jobId,modo,total){
+  let _done=0;
+  return new Promise(resolve=>{
+    const iv=setInterval(async()=>{
+      try{
+        const j=await(await fetch('/status/'+jobId)).json();
+        if(j.status==='done') {
+          clearInterval(iv);
+          updateProgress(modo,total,total);
+          setStatuses(modo,j.resultados);
+          hideProgress(modo);
+          resolve({ok:true,resultados:j.resultados});
+        } else if(j.status==='error'){
+          clearInterval(iv);
+          hideProgress(modo);
+          resolve({ok:false,erro:j.erro});
+        } else {
+          // Atualiza progresso estimado pelo tempo decorrido
+          _done=Math.min(_done+1,total-1);
+          updateProgress(modo,_done,total);
+        }
+      }catch{ clearInterval(iv); resolve({ok:false,erro:'Erro de rede.'}); }
+    },1500);
+  });
+}
+
+/* ── EXECUTAR ── */
+async function executar(modo){
+  const p=modo==='unico'?'u':'m';
+  const usuario=document.getElementById(p+'-usuario').value.trim();
+  const senha=document.getElementById(p+'-senha').value.trim();
+  const rows=state[modo].rows;
+
+  if(!usuario||!senha){toast('Informe usuário e senha.','warn');return;}
+  if(!rows.length){toast('Adicione pelo menos um documento.','warn');return;}
+
+  if(modo==='unico'){
+    const proc=document.getElementById('u-processo').value.trim();
+    if(!proc){toast('Informe o número do processo.','warn');return;}
+  }
+
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if(modo==='multi'&&!r.processo){toast(`Linha ${i+1}: informe o processo.`,'warn');return;}
+    if(!r.semPdf&&!r.serverPath){toast(`Linha ${i+1}: envie o arquivo ou marque Sem PDF.`,'warn');return;}
+    if(r.tipoSei==='Externo'&&!r.tipoExterno){toast(`Linha ${i+1}: selecione o tipo de documento.`,'warn');return;}
+  }
+
+  const docs=rows.map(r=>({processo:r.processo,tipo:r.tipoExterno,tipo_sei:r.tipoSei,server_path:r.serverPath,nome_arvore:r.nomeArvore||"",sem_pdf:r.semPdf}));
+  const payload=modo==='unico'?{usuario,senha,processo:document.getElementById('u-processo').value.trim(),documentos:docs}:{usuario,senha,documentos:docs};
+
+  const btn=document.getElementById(p+'-exec');
+  btn.classList.add('loading'); btn.disabled=true;
+  showProgress(modo);
+
+  let jobId;
+  try{
+    const r=await fetch('/executar/'+(modo==='unico'?'unico':'multiplos'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await r.json();
+    if(j.erro){toast(j.erro,'erro');btn.classList.remove('loading');btn.disabled=false;return;}
+    jobId=j.job_id;
+  }catch{toast('Erro de rede.','erro');btn.classList.remove('loading');btn.disabled=false;return;}
+
+  const result=await pollJob(jobId,modo,rows.length);
+  btn.classList.remove('loading'); btn.disabled=false;
+  if(result.ok){
+    const total=result.resultados.length, ok=result.resultados.filter(Boolean).length;
+    if(ok===total) toast(`✅ Todos os ${total} documentos processados!`,'ok',5000);
+    else           toast(`⚠️ ${ok}/${total} processados — verifique os erros.`,'warn',6000);
+  }else{
+    toast('Erro na automação: '+result.erro,'erro',8000);
+  }
+}
+
+document.getElementById('u-exec').addEventListener('click',()=>executar('unico'));
+document.getElementById('m-exec').addEventListener('click',()=>executar('multi'));
+
+/* ── CTRL+Z ── */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='z'){
+    undo(document.querySelector('.tab-btn.active').dataset.tab==='unico'?'unico':'multi');
+    e.preventDefault();
+  }
+});
+
+/* ══════════════════════════════════════════════════════
+   BOTÃO NOMES — vai direto para seleção de planilha xlsx
+══════════════════════════════════════════════════════ */
+let _importModo = 'unico';
+
+function abrirImportarXlsx(modo) {
+  if (!state[modo].rows.length) {
+    toast('Adicione documentos antes de importar nomes na árvore.', 'warn');
+    return;
+  }
+  _importModo = modo;
+  document.getElementById('xlsxInput').click();
+}
+
+document.getElementById('u-import-btn').addEventListener('click', () => abrirImportarXlsx('unico'));
+document.getElementById('m-import-btn').addEventListener('click', () => abrirImportarXlsx('multi'));
+
+let _xlsxFile = null;
+
+document.getElementById('xlsxInput').addEventListener('change', function() {
+  if (!this.files.length) return;
+  _xlsxFile = this.files[0];
+  this.value = '';
+  // Pede nome da aba
+  document.getElementById('modal-aba-input').value = '';
+  document.getElementById('modal-aba').classList.add('open');
+  document.getElementById('modal-aba-input').focus();
+});
+
+document.getElementById('aba-cancel').addEventListener('click', () => {
+  document.getElementById('modal-aba').classList.remove('open');
+  _xlsxFile = null;
+});
+
+document.getElementById('aba-ok').addEventListener('click', () => lerPlanilha());
+document.getElementById('modal-aba-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lerPlanilha();
+});
+
+async function lerPlanilha() {
+  const aba = document.getElementById('modal-aba-input').value.trim();
+  if (!aba) { toast('Digite o nome da aba.', 'warn'); return; }
+  if (!_xlsxFile) return;
+
+  document.getElementById('modal-aba').classList.remove('open');
+
+  // Envia para o backend processar o xlsx
+  const fd = new FormData();
+  fd.append('file', _xlsxFile);
+  fd.append('aba', aba);
+  _xlsxFile = null;
+
+  let json;
+  try {
+    const r = await fetch('/importar_planilha', { method: 'POST', body: fd });
+    json = await r.json();
+  } catch {
+    toast('Erro de rede ao ler planilha.', 'erro');
+    return;
+  }
+
+  if (json.erro) { toast(json.erro, 'erro', 6000); return; }
+
+  const nomes = json.nomes; // lista posicional, null = célula vazia
+  const rows  = state[_importModo].rows;
+
+  pushUndo(_importModo);
+
+  // Filtra células vazias e aplica sequencialmente nas linhas
+  const nomesFiltrados = nomes.filter(n => n);
+  let preenchidos = 0;
+  nomesFiltrados.slice(0, rows.length).forEach((nome, i) => {
+    rows[i].nomeArvore = nome; preenchidos++;
+  });
+
+  renderTab(_importModo);
+  toast(`${preenchidos} nome(s) importado(s). Células vazias foram ignoradas.`, 'ok', 5000);
+}
+
+/* ══════════════════════════════════════════════════════
+   PATCH: incluir nomeArvore no payload de execução
+══════════════════════════════════════════════════════ */
+// Sobrescreve a montagem do payload para incluir nome_arvore
+const _executarOriginal = executar;
+// (já está embutido na função executar — o row.nomeArquivo era usado como nome_arvore)
+// Agora rows também têm row.nomeArvore — mandamos os dois e o backend decide
+
+renderTab('unico');
+renderTab('multi');
+</script>
+</body>
+</html>
